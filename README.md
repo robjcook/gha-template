@@ -35,3 +35,16 @@ Takeaways:
 - **Contexts:** on a PR run `ref_name` is `1/merge` and `ref` is `refs/pull/1/merge` (GitHub tests a merge commit of branch + base); `head_ref`/`base_ref` are set only on PR events. On a push to `main`, `ref_name` is `main` and both are empty. `${{ }}` is substituted into the script text *before* the shell runs — the root of script injection (Phase 7).
 - **Jobs:** with no `needs:`, `test` and `lint` started in the same second on different runners. Each job is a fresh VM (hence `checkout` again) and bills rounded up to a whole minute — ~11 s of work billed as 2 minutes.
 - **Why removing `checkout` breaks it:** the runner workspace starts empty. Context echoes still work (they come from the event payload), but `npm ci` has no `package.json`/lockfile to read.
+
+### Phase 2 — Syntax, Triggers, Contexts, and Expressions 🚧
+
+Goal: read any workflow file in the wild and know what it does. Deliverable: one workflow using path filters, `workflow_dispatch` with a typed input, a conditional job, a step output consumed by a later job, and a step summary.
+
+Exercises:
+
+- [ ] 1. **Path filters** — `paths-ignore: ['**.md']` on CI, then open a docs-only PR and confirm no run starts
+- [ ] 2. **Manual trigger** — `workflow_dispatch` with a typed `choice` input, run it from the Actions tab and from `gh workflow run`
+- [ ] 3. **Step output → job output** — a `meta` job computes the version with `$GITHUB_OUTPUT`; a later job reads it via `needs.meta.outputs`
+- [ ] 4. **Conditional job** — a fake `deploy` job that runs only on a push to `main` or a manual run, skipped on PRs
+- [ ] 5. **Step summary** — write a Markdown table to `$GITHUB_STEP_SUMMARY` and find it on the run page
+- [ ] 6. **Variables** — compare `env:`, a repo configuration variable (`vars.*`) and a default variable (`$GITHUB_SHA`)
