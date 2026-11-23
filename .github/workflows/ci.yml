@@ -1,6 +1,10 @@
 # Phase 1 — Anatomy of a Workflow
 # Smallest complete CI: check out, set up Node with npm caching, install, test.
 name: CI
+# Inputs aren't shown anywhere on a workflow_dispatch run, so put them in the
+# run's title. For other events this evaluates to '' and GitHub falls back to
+# the usual title (commit message or PR title).
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Manual · {0}{1}', inputs.environment, inputs.verbose && ' · verbose' || '') || '' }}"
 
 on:
   push:
