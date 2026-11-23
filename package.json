@@ -1,5 +1,5 @@
 {
-  "name": "gha-learning",
+  "name": "gha-template",
   "version": "1.0.0",
   "description": "Sandbox Node.js app for working through the GitHub Actions learning plan",
   "main": "src/server.js",
