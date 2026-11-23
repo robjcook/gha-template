@@ -5,7 +5,12 @@ name: CI
 on:
   push:
     branches: [main]
+    # Phase 2, exercise 1: skip CI when a commit only touches Markdown.
+    paths-ignore: ['**.md']
   pull_request:
+    # For PRs the filter looks at the whole PR diff against the base branch,
+    # not at each commit: one non-Markdown file anywhere in the PR runs CI.
+    paths-ignore: ['**.md']
 
 jobs:
   test:
