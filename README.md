@@ -1,4 +1,4 @@
-# gha-learning
+# gha-template
 
 A deliberately tiny, dependency-free Node.js app used as a sandbox for working through a GitHub Actions learning plan, one phase at a time.
 
