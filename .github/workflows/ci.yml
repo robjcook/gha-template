@@ -11,6 +11,20 @@ on:
     # For PRs the filter looks at the whole PR diff against the base branch,
     # not at each commit: one non-Markdown file anywhere in the PR runs CI.
     paths-ignore: ['**.md']
+  # Phase 2, exercise 2: a manual "Run workflow" button with typed inputs.
+  # It only appears in the Actions tab once this is on the default branch.
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Pretend target environment
+        type: choice
+        options: [staging, production]
+        default: staging
+        required: true
+      verbose:
+        description: Print extra detail
+        type: boolean
+        default: false
 
 jobs:
   test:
@@ -25,6 +39,16 @@ jobs:
           echo "ref:      ${{ github.ref }}"
           echo "head_ref: ${{ github.head_ref }}"
           echo "base_ref: ${{ github.base_ref }}"
+      # `inputs` is empty on push/pull_request runs. `inputs.verbose` is a real
+      # boolean; the older `github.event.inputs.verbose` is the string "true"/"false".
+      - run: |
+          echo "environment:          '${{ inputs.environment }}'"
+          echo "inputs.verbose:       '${{ inputs.verbose }}'"
+          echo "event.inputs.verbose: '${{ github.event.inputs.verbose }}'"
+          echo "verbose is boolean:   ${{ inputs.verbose == true }}"
+          echo "verbose is string:    ${{ github.event.inputs.verbose == 'true' }}"
+      - if: inputs.verbose
+        run: echo "Verbose mode on — runner is ${{ runner.os }}/${{ runner.arch }}, run attempt ${{ github.run_attempt }}"
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:

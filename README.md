@@ -42,7 +42,7 @@ Goal: read any workflow file in the wild and know what it does. Deliverable: one
 
 Exercises:
 
-- [ ] 1. **Path filters** — `paths-ignore: ['**.md']` on CI, then open a docs-only PR and confirm no run starts
+- [x] 1. **Path filters** — `paths-ignore: ['**.md']` on CI, then open a docs-only PR and confirm no run starts ([#3](https://github.com/robjcook/gha-template/pull/3), [#4](https://github.com/robjcook/gha-template/pull/4) got no checks at all)
    - Caveat: a path-filtered workflow that never runs reports *nothing*, not success. If `CI / test` becomes a required check, docs-only PRs wait forever on "Expected — Waiting for status". Fix with an in-job filter or an always-running gate job (Phase 3).
 - [ ] 2. **Manual trigger** — `workflow_dispatch` with a typed `choice` input, run it from the Actions tab and from `gh workflow run`
 - [ ] 3. **Step output → job output** — a `meta` job computes the version with `$GITHUB_OUTPUT`; a later job reads it via `needs.meta.outputs`
