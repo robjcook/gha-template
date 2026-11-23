@@ -16,15 +16,22 @@ Requires Node 22+.
 
 ## Progress
 
-### Phase 1 — Anatomy of a Workflow 🚧
+### Phase 1 — Anatomy of a Workflow ✅
 
-Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — runs `npm ci` and `npm test` on every push to `main` and every pull request.
+Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — two parallel jobs on every push to `main` and every pull request: `test` (`npm ci` + `npm test`) and `lint` (`node --check` on every file).
 
 Exercises:
 
-- [ ] 1. Push and watch it run in the Actions tab
-- [ ] 2. Break a test deliberately and read the failure annotation
-- [ ] 3. Add `- run: echo "Branch is ${{ github.ref_name }}"` and inspect the log
-- [ ] 4. Add a second job and confirm from timestamps it ran in parallel
+- [x] 1. Push and watch it run in the Actions tab
+- [x] 2. Break a test deliberately and read the failure annotation ([#1](https://github.com/robjcook/gha-template/pull/1))
+- [x] 3. Add `- run: echo "Branch is ${{ github.ref_name }}"` and inspect the log ([#1](https://github.com/robjcook/gha-template/pull/1))
+- [x] 4. Add a second job and confirm from timestamps it ran in parallel ([#2](https://github.com/robjcook/gha-template/pull/2))
 
 Deliverable: every PR gets an automatic check, and you can explain why removing `checkout` breaks it.
+
+Takeaways:
+
+- **Failures:** GitHub only sees a step's exit code. `node --test` doesn't emit `::error file=…,line=…::` workflow commands, so the only annotation was a generic "Process completed with exit code 1" — line-level annotations need a reporter or problem matcher. A failed job also skips setup-node's post step, so no npm cache is saved.
+- **Contexts:** on a PR run `ref_name` is `1/merge` and `ref` is `refs/pull/1/merge` (GitHub tests a merge commit of branch + base); `head_ref`/`base_ref` are set only on PR events. On a push to `main`, `ref_name` is `main` and both are empty. `${{ }}` is substituted into the script text *before* the shell runs — the root of script injection (Phase 7).
+- **Jobs:** with no `needs:`, `test` and `lint` started in the same second on different runners. Each job is a fresh VM (hence `checkout` again) and bills rounded up to a whole minute — ~11 s of work billed as 2 minutes.
+- **Why removing `checkout` breaks it:** the runner workspace starts empty. Context echoes still work (they come from the event payload), but `npm ci` has no `package.json`/lockfile to read.

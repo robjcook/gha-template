@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "lint": "for f in src/*.js test/*.js; do node --check \"$f\" || exit 1; done && echo 'syntax OK'"
   },
   "license": "MIT"
 }

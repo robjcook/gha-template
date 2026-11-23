@@ -14,6 +14,7 @@ jobs:
       # Exercise 3: contexts. On a pull_request run ref_name is "<PR#>/merge";
       # head_ref holds the source branch (empty on push events).
       - run: echo "Branch is ${{ github.ref_name }}"
+      - run: echo "test job started at $(date -u +%H:%M:%S)"
       - run: |
           echo "event:    ${{ github.event_name }}"
           echo "ref:      ${{ github.ref }}"
@@ -26,3 +27,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+
+  # Exercise 4: a second job. No `needs:`, so it runs in parallel with `test`
+  # on its own fresh runner — compare the two jobs' start times in the run.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "lint job started at $(date -u +%H:%M:%S)"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm run lint
